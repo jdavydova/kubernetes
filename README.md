@@ -69,102 +69,128 @@ Apply resource to a specific namespace
     minikube addons enable ingress
 
 Open dashboard
+
     minikube dashboard
+    
 Check dashboard namespace resources
+
     kubectl get ns
     kubectl get all -n kubernetes-dashboard
+
 Apply dashboard ingress
+
     kubectl apply -f dashboard-ingress.yaml
     kubectl get ingress -n kubernetes-dashboard
     kubectl describe ingress dashboard-ingress -n kubernetes-dashboard
+    
 Add host mapping
+
     sudo vim /etc/hosts
 Add:
 
-127.0.0.1  dashboard.com
-Start tunnel (keep terminal open)
-minikube tunnel
-Open in browser:
+    127.0.0.1  dashboard.com
+    Start tunnel (keep terminal open)
+    minikube tunnel
+    Open in browser:
 
     http://dashboard.com
 8️⃣ Mosquitto Exercise (ConfigMap + Secret Volumes)
 1) Apply ConfigMap + Secret into the SAME namespace as the deployment
+ 
     kubectl apply -f config-file.yaml -n my-namespace
     kubectl apply -f secret-file.yaml -n my-namespace
+   
 2) Verify they exist
+ 
     kubectl get configmap -n my-namespace | grep mosquitto
     kubectl get secret -n my-namespace | grep mosquitto
+   
 Expected:
 
-mosquitto-config-file
+    mosquitto-config-file
 
-mosquitto-secret-file
+    mosquitto-secret-file
 
 3) Restart deployment (or delete pod)
-kubectl rollout restart deploy/mosquitto -n my-namespace
-# OR
-kubectl delete pod <mosquitto-pod-name> -n my-namespace
+ 
+    kubectl rollout restart deploy/mosquitto -n my-namespace
+### OR
+    kubectl delete pod <mosquitto-pod-name> -n my-namespace
+    
 4) Watch pod status
-kubectl get pod -n my-namespace -w
+ 
+    kubectl get pod -n my-namespace -w
+   
 Important: If the Deployment mounts /mosquitto/config from a ConfigMap and the ConfigMap is missing/empty, it replaces the folder in the container and Mosquitto may fail to start. For this exercise, the config must come from config-file.yaml.
 
-9) AWS ECR: Docker login and Kubernetes imagePullSecret
+9️⃣ AWS ECR: Docker Login + imagePullSecret
+
 Login to AWS ECR (run on your machine)
-aws ecr get-login-password --region eu-north-1 \
-| docker login --username AWS --password-stdin 788577008603.dkr.ecr.eu-north-1.amazonaws.com
+
+    aws ecr get-login-password --region eu-north-1 \
+    | docker login --username AWS --password-stdin 788577008603.dkr.ecr.eu-north-1.amazonaws.com
+    
 Create Kubernetes Docker registry secret (recommended)
-kubectl create secret docker-registry my-registry-key \
-  --docker-server=788577008603.dkr.ecr.eu-north-1.amazonaws.com \
-  --docker-username=AWS \
-  --docker-password="$(aws ecr get-login-password --region eu-north-1)" \
-  -n my-namespace
+
+    kubectl create secret docker-registry my-registry-key \
+      --docker-server=788577008603.dkr.ecr.eu-north-1.amazonaws.com \
+      --docker-username=AWS \
+      --docker-password="$(aws ecr get-login-password --region eu-north-1)" \
+      -n my-namespace
+      
 Use imagePullSecrets in Deployment
-spec:
-  template:
-    spec:
-      imagePullSecrets:
-        - name: my-registry-key
-10) Helm basics
+
+        spec:
+          template:
+            spec:
+              imagePullSecrets:
+                - name: my-registry-key
+                
+🔟 Helm Basics
+
 Install Helm
-brew install helm
+
+     brew install helm
 Create a chart
-helm create microservice
+
+    helm create microservice
+    
 Render templates (no install)
-helm template emailservice microservice -f email-service-values.yaml
+
+    helm template emailservice microservice -f email-service-values.yaml
+    
 Why use helm template:
 
 check templates are valid
-
 catch indentation mistakes
-
 debug values
 
 see final YAML output
 
 Lint chart
-helm lint microservice -f email-service-values.yaml
+
+    helm lint microservice -f email-service-values.yaml
+    
 Install chart (correct syntax)
-helm install emailservice microservice -f email-service-values.yaml -n my-namespace
+
+    helm install emailservice microservice -f email-service-values.yaml -n my-namespace
+
 Note: The chart path must be a directory (e.g., microservice).
 Typo example to avoid: micriservice (wrong).
 
 Recommended for iteration (install or upgrade)
-helm upgrade --install emailservice microservice -f email-service-values.yaml -n my-namespace
-11) Debugging tips
-Pod status
-kubectl get pods -n my-namespace
+
+    helm upgrade --install emailservice microservice -f email-service-values.yaml -n my-namespace
+
+1️⃣1️⃣ Debugging TipsPod status
+
+    kubectl get pods -n my-namespace
+    
 Describe pod (check Events at the bottom)
-kubectl describe pod <pod-name> -n my-namespace
+
+    kubectl describe pod <pod-name> -n my-namespace
+    
 Logs (previous logs help with crash loops)
-kubectl logs <pod-name> -n my-namespace --tail=200
-kubectl logs <pod-name> -n my-namespace --previous --tail=200
 
-### To add this README.md into git
-```bash
-# create/update file
-vim README.md
-
-# stage + commit + push
-git add README.md
-git commit -m "Add Kubernetes demo instructions"
-git push
+    kubectl logs <pod-name> -n my-namespace --tail=200
+    kubectl logs <pod-name> -n my-namespace --previous --tail=200
