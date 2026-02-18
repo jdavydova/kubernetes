@@ -2,48 +2,65 @@
 
 ## 1) Install Minikube
 
-```bash
-brew install minikube
-2) Create and start the cluster
-minikube start --driver=docker
-minikube status
-kubectl get nodes
+  ```bash
+  brew install minikube
+
+## 2) Create and start the cluster
+
+  minikube start --driver=docker
+  minikube status
+  kubectl get nodes
+
 3) Main kubectl commands
 Create deployments
-kubectl create deployment nginx-depl --image=nginx
-kubectl create deployment mongo-deployment --image=mongo
+  kubectl create deployment nginx-depl --image=nginx
+  kubectl create deployment mongo-deployment --image=mongo
+
 View resources
-kubectl get deployments
-kubectl get pods
-kubectl get replicaset
-kubectl get all
+
+  kubectl get deployments
+  kubectl get pods
+  kubectl get replicaset
+  kubectl get all
+
 Edit deployment
-kubectl edit deployment nginx-depl
+  kubectl edit deployment nginx-depl
+
 View logs
-kubectl logs <pod-name>
+  kubectl logs <pod-name>
+
 Exec into container
-kubectl exec -it <pod-name> -- /bin/bash
+  kubectl exec -it <pod-name> -- /bin/bash
+
 Example:
 
-kubectl exec -it mongo-deployment-xxxx -- /bin/bash
+  kubectl exec -it mongo-deployment-xxxx -- /bin/bash
+
 4) MongoDB demo (Secrets + ConfigMap + Deployments)
 Apply Secret
-kubectl apply -f mongo-secret.yaml
-kubectl get secrets
-Apply MongoDB deployment
-kubectl apply -f mongo.yaml
-kubectl get all | grep mongodb
+
+  kubectl apply -f mongo-secret.yaml
+  kubectl get secrets
+  Apply MongoDB deployment
+  kubectl apply -f mongo.yaml
+  kubectl get all | grep mongodb
+
 Apply ConfigMap + Mongo Express
-kubectl apply -f mongo-configmap.yaml
-kubectl apply -f mongo-express.yaml
+  kubectl apply -f mongo-configmap.yaml
+  kubectl apply -f mongo-express.yaml
+
 5) Create components in a namespace
 Apply resource to a specific namespace
-kubectl apply -f mongo-configmap.yaml -n my-namespace
+  kubectl apply -f mongo-configmap.yaml -n my-namespace
+
 6) Install kubectx (optional tool for namespace switching)
-brew install kubectx
+  brew install kubectx
+
 7) Enable Ingress in Minikube + Kubernetes Dashboard access
 Enable ingress addon
-minikube addons enable ingress
+
+  minikube addons enable ingress
+
 Open dashboard
 minikube dashboard
 Check dashboard namespace resources
