@@ -1,77 +1,84 @@
 # Kubernetes Practice Guide (Minikube + kubectl + Ingress + AWS ECR + Helm)
 
-## 1) Install Minikube
+1️⃣ Install Minikube
 
-  ```bash
-  brew install minikube
+    ```bash
+    brew install minikube
 
-## 2) Create and start the cluster
+2️⃣ Create and Start the Cluster
 
-  minikube start --driver=docker
-  minikube status
-  kubectl get nodes
+    minikube start --driver=docker
+    minikube status
+    kubectl get nodes
 
-3) Main kubectl commands
+3️⃣ Main kubectl Commands
 Create deployments
-  kubectl create deployment nginx-depl --image=nginx
-  kubectl create deployment mongo-deployment --image=mongo
+
+    kubectl create deployment nginx-depl --image=nginx
+    kubectl create deployment mongo-deployment --image=mongo
 
 View resources
 
-  kubectl get deployments
-  kubectl get pods
-  kubectl get replicaset
-  kubectl get all
+    kubectl get deployments
+    kubectl get pods
+    kubectl get replicaset
+    kubectl get all
 
 Edit deployment
-  kubectl edit deployment nginx-depl
+
+    kubectl edit deployment nginx-depl
 
 View logs
-  kubectl logs <pod-name>
+
+    kubectl logs <pod-name>
 
 Exec into container
-  kubectl exec -it <pod-name> -- /bin/bash
+
+    kubectl exec -it <pod-name> -- /bin/bash
 
 Example:
 
-  kubectl exec -it mongo-deployment-xxxx -- /bin/bash
+    kubectl exec -it mongo-deployment-xxxx -- /bin/bash
 
-4) MongoDB demo (Secrets + ConfigMap + Deployments)
+4️⃣ MongoDB Demo (Secrets + ConfigMap + Deployments)
+
 Apply Secret
 
-  kubectl apply -f mongo-secret.yaml
-  kubectl get secrets
-  Apply MongoDB deployment
-  kubectl apply -f mongo.yaml
-  kubectl get all | grep mongodb
+    kubectl apply -f mongo-secret.yaml
+    kubectl get secrets
+    Apply MongoDB deployment
+    kubectl apply -f mongo.yaml
+    kubectl get all | grep mongodb
 
 Apply ConfigMap + Mongo Express
-  kubectl apply -f mongo-configmap.yaml
-  kubectl apply -f mongo-express.yaml
 
-5) Create components in a namespace
+    kubectl apply -f mongo-configmap.yaml
+    kubectl apply -f mongo-express.yaml
+
+5️⃣ Create Components in a Namespace
 Apply resource to a specific namespace
-  kubectl apply -f mongo-configmap.yaml -n my-namespace
 
-6) Install kubectx (optional tool for namespace switching)
-  brew install kubectx
+    kubectl apply -f mongo-configmap.yaml -n my-namespace
 
-7) Enable Ingress in Minikube + Kubernetes Dashboard access
-Enable ingress addon
+6️⃣ Install kubectx (Optional)  
 
-  minikube addons enable ingress
+    brew install kubectx
+
+7️⃣ Enable Ingress in MinikubeEnable ingress addon
+
+    minikube addons enable ingress
 
 Open dashboard
-minikube dashboard
+    minikube dashboard
 Check dashboard namespace resources
-kubectl get ns
-kubectl get all -n kubernetes-dashboard
+    kubectl get ns
+    kubectl get all -n kubernetes-dashboard
 Apply dashboard ingress
-kubectl apply -f dashboard-ingress.yaml
-kubectl get ingress -n kubernetes-dashboard
-kubectl describe ingress dashboard-ingress -n kubernetes-dashboard
+    kubectl apply -f dashboard-ingress.yaml
+    kubectl get ingress -n kubernetes-dashboard
+    kubectl describe ingress dashboard-ingress -n kubernetes-dashboard
 Add host mapping
-sudo vim /etc/hosts
+    sudo vim /etc/hosts
 Add:
 
 127.0.0.1  dashboard.com
@@ -79,14 +86,14 @@ Start tunnel (keep terminal open)
 minikube tunnel
 Open in browser:
 
-http://dashboard.com
-8) Mosquitto exercise (ConfigMap + Secret volumes)
+    http://dashboard.com
+8️⃣ Mosquitto Exercise (ConfigMap + Secret Volumes)
 1) Apply ConfigMap + Secret into the SAME namespace as the deployment
-kubectl apply -f config-file.yaml -n my-namespace
-kubectl apply -f secret-file.yaml -n my-namespace
+    kubectl apply -f config-file.yaml -n my-namespace
+    kubectl apply -f secret-file.yaml -n my-namespace
 2) Verify they exist
-kubectl get configmap -n my-namespace | grep mosquitto
-kubectl get secret -n my-namespace | grep mosquitto
+    kubectl get configmap -n my-namespace | grep mosquitto
+    kubectl get secret -n my-namespace | grep mosquitto
 Expected:
 
 mosquitto-config-file
